@@ -60,6 +60,20 @@ class ChatUser {
     });
   }
 
+
+  /**Get a joke and send it back {type: "chat", text: "joke!", name: "Server"} */
+
+  handleJoke() {
+    let jokes = ["What do you call eight hobbits? A hob-byte!"]
+    let data = {
+      type: "chat",
+      text: jokes[0],
+      name: "Server"
+    }
+    this.send(JSON.stringify(data));
+    
+    console.log('data', data)
+  }
   /** Handle messages from client:
    *
    * @param jsonData {string} raw message data
@@ -75,6 +89,7 @@ class ChatUser {
 
     if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "chat") this.handleChat(msg.text);
+    else if (msg.type === "get-joke") this.handleJoke();
     else throw new Error(`bad message: ${msg.type}`);
   }
 
