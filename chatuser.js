@@ -1,6 +1,7 @@
 /** Functionality related to chatting. */
 
 // Room is an abstraction of a chat channel
+const e = require("express");
 const Room = require("./Room");
 
 /** ChatUser is a individual connection from client -> server to chat. */
@@ -61,7 +62,7 @@ class ChatUser {
   }
 
 
-  /**Get a joke and send it back {type: "chat", text: "joke!", name: "Server"} */
+  /**Get a joke and send it back as JSON {type: "chat", text: "joke!", name: "Server"} */
 
   handleJoke() {
     let jokes = ["What do you call eight hobbits? A hob-byte!"]
@@ -71,9 +72,34 @@ class ChatUser {
       name: "Server"
     }
     this.send(JSON.stringify(data));
-    
+
     console.log('data', data)
   }
+
+  /**
+   * 
+   * 
+   * Return JSON as a list of the members of that current room
+   */
+  handleMemberList() {
+
+    let memberString = "";
+
+    for (let member of this.room.members) {
+      console.log("this member is", member);
+      memberString += member.name + ", ";
+    }
+
+    let data = {
+      type: "chat",
+      name: "In room",
+      text: memberString
+    }
+    console.log("members", data);
+    this.send(JSON.stringify(data));
+
+  }
+
   /** Handle messages from client:
    *
    * @param jsonData {string} raw message data
@@ -90,6 +116,7 @@ class ChatUser {
     if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "chat") this.handleChat(msg.text);
     else if (msg.type === "get-joke") this.handleJoke();
+    else if (msg.type === "get-members") this.handleMemberList();
     else throw new Error(`bad message: ${msg.type}`);
   }
 
